@@ -23,19 +23,36 @@ pub struct VlsmResult {
     pub remaining: u32,
 }
 
-pub fn run(cli: &Cli, cidr: String, requirements: Vec<u32>) -> Result<()> {
+pub fn run(cli: &Cli, cidr: String, requirements: Vec<String>) -> Result<()> {
     let network = Ipv4Network::from_cidr(&cidr).map_err(|e| anyhow::anyhow!(e))?;
     let available = network.usable_hosts();
     
+    // Parse requirements - supports both comma-separated and space-separated
+    let mut parsed_reqs: Vec<u32> = Vec::new();
+    for req in requirements {
+        // Split by comma and/or space
+        for part in req.split(|c| c == ',' || c == ' ') {
+            let part = part.trim();
+            if !part.is_empty() {
+                let num: u32 = part.parse()
+                    .map_err(|_| anyhow::anyhow!("Invalid number: '{}'", part))?;
+                parsed_reqs.push(num);
+            }
+        }
+    }
+    
+    if parsed_reqs.is_empty() {
+        anyhow::bail!("No host requirements provided");
+    }
+    
     // Sort requirements in descending order (largest first)
-    let mut sorted_reqs = requirements.clone();
-    sorted_reqs.sort_by(|a, b| b.cmp(a));
+    parsed_reqs.sort_by(|a, b| b.cmp(a));
     
     let mut allocations = Vec::new();
     let mut current_addr = network.address();
     let mut total_allocated = 0u32;
     
-    for (_i, hosts_needed) in sorted_reqs.iter().enumerate() {
+    for (_i, hosts_needed) in parsed_reqs.iter().enumerate() {
         // Calculate required prefix for this many hosts
         let prefix = Ipv4Network::prefix_for_hosts(*hosts_needed);
         let subnet = Ipv4Network::new(current_addr, prefix).unwrap();

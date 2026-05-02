@@ -120,9 +120,9 @@ pub enum Commands {
         #[arg(value_name = "CIDR", required = true)]
         cidr: String,
 
-        /// Host requirements (comma-separated or multiple values)
-        #[arg(required = true, value_name = "REQUIREMENTS")]
-        requirements: Vec<u32>,
+        /// Host requirements (comma-separated or space-separated)
+        #[arg(required = true, value_name = "REQUIREMENTS", num_args = 1..)]
+        requirements: Vec<String>,
     },
 
     /// Classify IP address (A/B/C/D/E class)
