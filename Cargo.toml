@@ -1,0 +1,46 @@
+[package]
+name = "ipcalc"
+version = "0.1.0"
+edition = "2021"
+authors = ["cool0looc <coollooc088@gmail.com>"]
+description = "A comprehensive IP address calculator for IPv4 and IPv6"
+license = "MIT"
+repository = "https://github.com/cool0looc/ipcalc"
+homepage = "https://github.com/cool0looc/ipcalc"
+documentation = "https://github.com/cool0looc/ipcalc#readme"
+keywords = ["ip", "ipv4", "ipv6", "subnet", "cidr", "calculator", "network"]
+categories = ["command-line-utilities", "network-programming"]
+rust-version = "1.70"
+
+[dependencies]
+# CLI
+clap = { version = "4.6.1", features = ["derive", "color"] }
+anyhow = "1.0.102"
+thiserror = "2.0.18"
+
+# Serialization
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+serde_yaml = "0.9"
+
+# CSV
+csv = "1.4.0"
+
+# Additional utilities
+lazy_static = "1.5"
+regex = "1.12.3"
+
+[dev-dependencies]
+criterion = "0.8.2"
+proptest = "1.11.0"
+tempfile = "3.27.0"
+
+[[bin]]
+name = "ipcalc"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
