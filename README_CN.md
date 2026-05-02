@@ -575,20 +575,21 @@ isc-dhcp-server 配置示例:
 
 ## 输出格式
 
-所有命令都支持使用 `--format` 选项选择多种输出格式。
+所有命令都支持使用 `--format` 或 `-f` 选项选择多种输出格式。**格式选项必须放在子命令之前。**
 
 ```bash
 # 人类可读格式（默认）
 ipcalc subnet 192.168.1.0/24
 
 # JSON 输出
-ipcalc subnet 192.168.1.0/24 --format json
+ipcalc --format json subnet 192.168.1.0/24
+ipcalc -f json subnet 192.168.1.0/24
 
 # YAML 输出
-ipcalc subnet 192.168.1.0/24 --format yaml
+ipcalc --format yaml subnet 192.168.1.0/24
 
 # CSV 输出
-ipcalc subnet 192.168.1.0/24 --format csv
+ipcalc --format csv subnet 192.168.1.0/24
 ```
 
 **格式选项：**
@@ -614,8 +615,8 @@ EOF
 # 从文件处理
 ipcalc subnet --file ips.txt
 
-# 指定格式
-ipcalc subnet --file ips.txt --format json
+# 指定格式（注意：格式选项放在子命令之前）
+ipcalc --format json subnet --file ips.txt
 ```
 
 ---

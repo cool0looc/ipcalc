@@ -575,20 +575,21 @@ Example isc-dhcp-server Configuration:
 
 ## Output Formats
 
-All commands support multiple output formats using the `--format` option.
+All commands support multiple output formats using the `--format` or `-f` option. **The format option must come before the subcommand.**
 
 ```bash
 # Human-readable (default)
 ipcalc subnet 192.168.1.0/24
 
 # JSON output
-ipcalc subnet 192.168.1.0/24 --format json
+ipcalc --format json subnet 192.168.1.0/24
+ipcalc -f json subnet 192.168.1.0/24
 
 # YAML output
-ipcalc subnet 192.168.1.0/24 --format yaml
+ipcalc --format yaml subnet 192.168.1.0/24
 
 # CSV output
-ipcalc subnet 192.168.1.0/24 --format csv
+ipcalc --format csv subnet 192.168.1.0/24
 ```
 
 **Format Options:**
@@ -614,8 +615,8 @@ EOF
 # Process from file
 ipcalc subnet --file ips.txt
 
-# With format
-ipcalc subnet --file ips.txt --format json
+# With format (note: format option comes before subcommand)
+ipcalc --format json subnet --file ips.txt
 ```
 
 ---
