@@ -12,35 +12,17 @@ on:
         type: string
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-
-    steps:
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.version || github.ref_name }}
-          name: "Release ${{ github.event.inputs.version || github.ref_name }}"
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   build:
-    needs: create-release
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             artifact_name: ipcalc-linux-x86_64
             rust_target: x86_64-unknown-linux-gnu
-          - os: ubuntu-24.04
+          - os: ubuntu-latest
             target: aarch64-unknown-linux-gnu
             artifact_name: ipcalc-linux-aarch64
             rust_target: aarch64-unknown-linux-gnu
@@ -62,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.95
           targets: ${{ matrix.rust_target }}
@@ -81,21 +63,19 @@ jobs:
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.version || github.ref_name }}
           files: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-no-stdlib:
-    needs: create-release
-    runs-on: ubuntu-24.04
+  build-static:
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.95
           targets: x86_64-unknown-linux-musl
@@ -110,13 +90,12 @@ jobs:
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.version || github.ref_name }}
           files: target/x86_64-unknown-linux-musl/release/ipcalc-linux-x86_64-musl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   checksum:
-    needs: create-release
+    needs: [build, build-static]
     runs-on: ubuntu-latest
     
     steps:
@@ -137,7 +116,6 @@ jobs:
       - name: Upload checksums
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.version || github.ref_name }}
           files: artifacts/SHA256SUMS.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
