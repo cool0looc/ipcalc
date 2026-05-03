@@ -1,7 +1,7 @@
 [package]
 name = "ipcalc"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 authors = ["cool0looc <coollooc088@gmail.com>"]
 description = "A comprehensive IP address calculator for IPv4 and IPv6"
 license = "MIT"

@@ -1,26 +1,86 @@
-# ipcalc
+# ipcalc - IP Address Calculator & Subnet Tools
 
-A powerful, feature-rich IP address calculator written in Rust for IPv4 and IPv6 networks.
+> A powerful, feature-rich IP address calculator and subnet mask calculator written in Rust. Calculate subnets, CIDR notation, VLSM, DHCP scopes, and more for IPv4 and IPv6 networks.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/Rust-1.70+-orange.svg)](https://www.rust-lang.org)
+[![Stars](https://img.shields.io/github/stars/cool0looc/ipcalc?style=social)](https://github.com/cool0looc/ipcalc)
+[![Downloads](https://img.shields.io/github/downloads/cool0looc/ipcalc/total.svg)](https://github.com/cool0looc/ipcalc/releases)
 
-## Features
+<!-- TOC -->
+- [ipcalc - IP Address Calculator & Subnet Tools](#ipcalc---ip-address-calculator--subnet-tools)
+  - [✨ Features](#-features)
+  - [🚀 Quick Start](#-quick-start)
+  - [📦 Installation](#-installation)
+  - [📖 What is ipcalc?](#-what-is-ipcalc)
+  - [📚 Commands Reference](#-commands-reference)
+    - [subnet - Subnet Calculator](#subnet---subnet-calculator)
+    - [vlsm - VLSM Calculator](#vlsm---vlsm-calculator)
+    - [divide - Divide Network](#divide---divide-network)
+    - [summarize - CIDR Aggregation](#summarize---cidr-aggregation)
+    - [expand - IP Range to CIDR](#expand---ip-range-to-cidr)
+    - [private - Private IP Checker](#private---private-ip-checker)
+    - [classify - IP Class](#classify---ip-class)
+    - [convert - IP Format Converter](#convert---ip-format-converter)
+    - [lookup - Network Lookup](#lookup---network-lookup)
+    - [conflict - Conflict Detection](#conflict---conflict-detection)
+    - [visualize - Network Tree View](#visualize---network-tree-view)
+    - [plan - Subnet Planning](#plan---subnet-planning)
+    - [dhcp - DHCP Planning](#dhcp---dhcp-planning)
+  - [💡 Common Use Cases](#-common-use-cases)
+    - [Network Administration](#network-administration)
+    - [Subnet Planning](#subnet-planning)
+    - [IP Range Conversion](#ip-range-conversion)
+    - [Security & Compliance](#security--compliance)
+    - [DHCP Planning](#dhcp-planning)
+  - [📊 Output Formats](#-output-formats)
+  - [🔧 Batch Processing](#-batch-processing)
+  - [🏗️ Architecture](#️-architecture)
+  - [🤝 Contributing](#-contributing)
+  - [📄 License](#-license)
+  - [❓ FAQ](#-faq)
+  - [📞 Support](#-support)
+
+<!-- /TOC -->
+
+## ✨ Features
 
 - **IPv4 & IPv6 Support** - Full support for both IP protocol versions
-- **15+ Commands** - Comprehensive toolkit for IP address calculations
-- **Multiple Output Formats** - Human-readable, JSON, YAML, CSV
-- **Batch Processing** - Process multiple IPs or networks at once
-- **CIDR Aggregation** - Combine multiple CIDR blocks into supernets
-- **VLSM Calculator** - Variable Length Subnet Masking calculations
-- **DHCP Planning** - DHCP scope planning with reservations
-- **Conflict Detection** - Detect IP address conflicts between networks
-- **Subnet Planning** - Intelligent subnet planning recommendations
+- **15+ Commands** - Comprehensive IP address calculation toolkit
+- **Subnet Calculator** - Calculate network address, broadcast, subnet mask, wildcard mask, usable hosts
+- **VLSM Calculator** - Variable Length Subnet Masking for efficient IP allocation
+- **CIDR Calculator** - CIDR notation calculations and aggregation
+- **DHCP Planning** - DHCP scope planning with reservations and exclusions
+- **Multiple Output Formats** - Human-readable, JSON, YAML, CSV output
+- **Batch Processing** - Process multiple IP addresses or networks at once
 - **Network Visualization** - ASCII tree visualization of network hierarchy
+- **Conflict Detection** - Detect IP address overlaps between networks
 
-## Installation
+## 🚀 Quick Start
 
-### From Source
+```bash
+# Calculate subnet information (most common use)
+ipcalc subnet 192.168.1.0/24
+
+# Check if IP is private or public
+ipcalc private 10.0.0.1
+
+# Divide network into subnets
+ipcalc divide 192.168.1.0/24 4
+
+# VLSM allocation for multiple VLANs
+ipcalc vlsm 192.168.1.0/24 100,50,25,10
+
+# Aggregate multiple CIDR blocks
+ipcalc summarize 192.168.1.0/24 192.168.2.0/24
+
+# Convert IP range to CIDR
+ipcalc expand 192.168.1.1-192.168.1.254
+```
+
+## 📦 Installation
+
+### From Source (Recommended)
 
 ```bash
 # Clone the repository
@@ -30,69 +90,61 @@ cd ipcalc
 # Build release version
 cargo build --release
 
-# Install globally (optional)
+# Install globally
 cargo install --path .
 ```
 
-### Binary Release
+### Pre-built Binaries
 
-Download pre-built binaries from the [Releases](https://github.com/cool0looc/ipcalc/releases) page.
+Download from the [Releases](https://github.com/cool0looc/ipcalc/releases) page:
 
-## Quick Start
+| Platform | Download |
+|----------|----------|
+| Linux (x86_64) | ipcalc-linux-x86_64 |
+| macOS (Apple Silicon) | ipcalc-macos-aarch64 |
+| macOS (Intel) | ipcalc-macos-x86_64 |
+| Windows | ipcalc-windows.exe |
 
-```bash
-# Calculate subnet information
-ipcalc subnet 192.168.1.0/24
+## 📖 What is ipcalc?
 
-# Convert IP range to CIDR
-ipcalc expand 192.168.1.1-192.168.1.254
+**ipcalc** is a free, open-source IP address calculator and subnet calculator written in Rust. It provides network engineers, system administrators, and IT professionals with a comprehensive toolkit for:
 
-# Check if IP is private
-ipcalc private 10.0.0.1
+- **Subnetting**: Calculate network boundaries, broadcast addresses, and usable host ranges
+- **VLSM (Variable Length Subnet Masking)**: Efficiently allocate IP addresses based on department/VLAN requirements
+- **CIDR (Classless Inter-Domain Routing)**: Work with CIDR notation and aggregate CIDR blocks
+- **DHCP Planning**: Plan DHCP scopes with appropriate exclusion ranges and reservations
+- **IP Validation**: Validate IP addresses and CIDR notation
 
-# Divide network into subnets
-ipcalc divide 192.168.1.0/24 4
+### Why ipcalc?
 
-# Aggregate multiple CIDRs
-ipcalc summarize 192.168.1.0/24 192.168.2.0/24
-```
+| Feature | ipcalc | Online Calculators | Other CLI Tools |
+|---------|--------|-------------------|-----------------|
+| No internet required | ✅ | ❌ | ✅ |
+| Scriptable/API | ✅ | ❌ | Limited |
+| VLSM support | ✅ | Limited | Limited |
+| IPv6 support | ✅ | Variable | Limited |
+| Output formats | JSON/YAML/CSV | HTML only | Text only |
+| Cross-platform | ✅ | Browser only | Variable |
+| Open source | ✅ | ❌ | Variable |
 
-## Commands Reference
+## 📚 Commands Reference
 
-### validate
-
-Validate IP addresses or CIDR notation.
-
-```bash
-ipcalc validate 192.168.1.1
-ipcalc validate 192.168.1.0/24
-ipcalc validate 10.0.0.0/8 172.16.0.1 192.168.1.0/16
-
-# Strict mode - fails on any invalid input
-ipcalc validate --strict 192.168.1.0/24 invalid_ip
-```
-
-**Options:**
-- `IP_OR_CIDR...` - IP addresses or CIDRs to validate
-
----
-
-### subnet
+### subnet - Subnet Calculator
 
 Calculate detailed subnet information including network address, broadcast, netmask, wildcard mask, first/last usable IP, and total/usable host count.
 
 ```bash
-# Basic usage
+# Basic subnet calculation
 ipcalc subnet 192.168.1.0/24
 
-# Multiple networks
+# Calculate multiple subnets at once
 ipcalc subnet 192.168.1.0/24 10.0.0.0/8 172.16.0.0/16
 
-# Show all details
+# Show all subnet details
 ipcalc subnet --show-all 192.168.1.0/24
 ```
 
-**Output Example:**
+**Example Output:**
 ```
 Network:      192.168.1.0/24
 Netmask:      255.255.255.0
@@ -110,139 +162,19 @@ Usable Hosts: 254
 
 ---
 
-### range
+### vlsm - VLSM Calculator
 
-Show the IP range (start and end addresses) for CIDR notation.
-
-```bash
-ipcalc range 192.168.1.0/24
-ipcalc range 10.0.0.0/8
-ipcalc range 172.16.0.0/12 192.168.0.0/16
-```
-
-**Output Example:**
-```
-CIDR:         192.168.1.0/24
-Start:        192.168.1.0 (Network)
-First Host:   192.168.1.1
-Last Host:    192.168.1.254
-End:          192.168.1.255 (Broadcast)
-```
-
----
-
-### expand (IP Range to CIDR)
-
-Convert IP ranges to CIDR notation. This finds the minimum CIDR that contains the entire range.
+Variable Length Subnet Masking (VLSM) calculator. Allocates subnets based on host requirements for efficient IP address utilization.
 
 ```bash
-# Basic usage
-ipcalc expand 192.168.1.1-192.168.1.254
-
-# Full network
-ipcalc expand 192.168.1.0-192.168.1.255
-
-# Range across subnet boundaries
-ipcalc expand 192.168.1.128-192.168.2.127
-
-# Custom prefix limits
-ipcalc expand 192.168.1.1-192.168.1.30 --min-prefix 28 --max-prefix 30
-```
-
-**Output Example:**
-```
-IP Range:     192.168.1.1-192.168.1.254
-Total IPs:   254 (+2 reserved)
-
-CIDR Blocks:
-  192.168.1.0/24  (192.168.1.1 - 192.168.1.254)  [256 IPs, 254 usable]
-```
-
-**Options:**
-- `--min-prefix, -n` - Minimum prefix length (default: 8)
-- `--max-prefix, -m` - Maximum prefix length (default: 32)
-
-**Algorithm:** Uses RFC 4632 optimal CIDR aggregation algorithm to find the smallest set of CIDR blocks that exactly cover the given range.
-
----
-
-### summarize
-
-Aggregate multiple CIDR blocks into supernets (CIDR consolidation).
-
-```bash
-# Basic usage
-ipcalc summarize 192.168.1.0/24 192.168.2.0/24
-
-# Multiple networks
-ipcalc summarize 10.0.0.0/24 10.0.1.0/24 10.0.2.0/24 10.0.3.0/24
-
-# Complex aggregation
-ipcalc summarize 192.168.0.0/24 192.168.1.0/24 192.168.2.0/24 192.168.3.0/24
-```
-
-**Output Example:**
-```
-Original Networks:
-  192.168.1.0/24
-  192.168.2.0/24
-
-Aggregated Result:
-  192.168.1.0/23
-```
-
----
-
-### divide
-
-Divide a network into equal-sized subnets.
-
-```bash
-# Divide into 4 subnets
-ipcalc divide 192.168.1.0/24 4
-
-# Divide into 8 subnets
-ipcalc divide 10.0.0.0/8 256
-
-# Custom number
-ipcalc divide 172.16.0.0/16 16
-```
-
-**Output Example:**
-```
-Parent Network:  192.168.1.0/24
-Subnets:        4
-Prefix:         /26 (255.255.255.192)
-
-Subnets:
-  #1:  192.168.1.0/26    (0-63)    [64 IPs, 62 usable]
-  #2:  192.168.1.64/26   (64-127)  [64 IPs, 62 usable]
-  #3:  192.168.1.128/26  (128-191) [64 IPs, 62 usable]
-  #4:  192.168.1.192/26  (192-255) [64 IPs, 62 usable]
-```
-
-**Options:**
-- `CIDR` - Parent network in CIDR notation
-- `NUM_SUBNETS` - Number of subnets to create
-
----
-
-### vlsm
-
-Variable Length Subnet Masking (VLSM) calculator. Allocates subnets based on host requirements.
-
-```bash
-# Basic usage with comma-separated values
+# VLSM calculation for network design
 ipcalc vlsm 192.168.1.0/24 100,50,25,10
 
-# Multiple requirement arguments
-ipcalc vlsm 10.0.0.0/8 1000 500 250 100 50
-
-# Large network planning
-ipcalc vlsm 172.16.0.0/12 10000,5000,2000,1000,500,100
+# Large network VLSM planning
+ipcalc vlsm 10.0.0.0/8 10000,5000,2000,1000,500,100
 ```
 
-**Output Example:**
+**Example Output:**
 ```
 Network:       172.16.0.0/12
 Available:     1,048,574 hosts
@@ -259,48 +191,95 @@ Remaining:     34,302 hosts (unallocated)
 ```
 
 **Options:**
-- `REQUIREMENTS...` - Host requirements (can be comma-separated or multiple arguments)
+- `REQUIREMENTS...` - Host requirements (comma-separated or multiple arguments)
 
 ---
 
-### classify
+### divide - Divide Network
 
-Classify IP addresses into traditional A/B/C/D/E classes.
+Divide a network into equal-sized subnets.
 
 ```bash
-ipcalc classify 10.0.0.1
-ipcalc classify 172.16.0.1 192.168.1.1 127.0.0.1
-ipcalc classify 240.0.0.1 224.0.0.1
+# Divide into 4 equal subnets
+ipcalc divide 192.168.1.0/24 4
+
+# Divide into 8 subnets
+ipcalc divide 10.0.0.0/8 256
+
+# Custom subdivision
+ipcalc divide 172.16.0.0/16 16
 ```
 
-**Output Example:**
+**Example Output:**
 ```
-Address:     172.16.0.1
-Class:       Class B
-Default Mask: 255.255.0.0
-CIDR:        /16
-Range:       172.16.0.0 - 172.16.255.255
-```
+Parent Network:  192.168.1.0/24
+Subnets:        4
+Prefix:         /26 (255.255.255.192)
 
-**IP Classes:**
-- **Class A**: 0.0.0.0 - 127.255.255.255 (/8)
-- **Class B**: 128.0.0.0 - 191.255.255.255 (/16)
-- **Class C**: 192.0.0.0 - 223.255.255.255 (/24)
-- **Class D**: 224.0.0.0 - 239.255.255.255 (Multicast)
-- **Class E**: 240.0.0.0 - 255.255.255.255 (Reserved)
+Subnets:
+  #1:  192.168.1.0/26    (0-63)    [64 IPs, 62 usable]
+  #2:  192.168.1.64/26   (64-127)  [64 IPs, 62 usable]
+  #3:  192.168.1.128/26  (128-191) [64 IPs, 62 usable]
+  #4:  192.168.1.192/26  (192-255) [64 IPs, 62 usable]
+```
 
 ---
 
-### private
+### summarize - CIDR Aggregation
 
-Check if an IP address is private or public, and identify its type according to RFC standards.
+Aggregate multiple CIDR blocks into supernets (CIDR consolidation).
 
 ```bash
-ipcalc private 10.0.0.1
-ipcalc private 172.16.0.1
-ipcalc private 192.168.1.1
-ipcalc private 8.8.8.8
-ipcalc private 127.0.0.1
+# Aggregate CIDR blocks
+ipcalc summarize 192.168.1.0/24 192.168.2.0/24
+
+# Multiple network aggregation
+ipcalc summarize 10.0.0.0/24 10.0.1.0/24 10.0.2.0/24 10.0.3.0/24
+```
+
+**Example Output:**
+```
+Original Networks:
+  192.168.1.0/24
+  192.168.2.0/24
+
+Aggregated Result:
+  192.168.1.0/23
+```
+
+---
+
+### expand - IP Range to CIDR
+
+Convert IP ranges to CIDR notation using RFC 4632 optimal aggregation.
+
+```bash
+# Convert IP range to CIDR blocks
+ipcalc expand 192.168.1.1-192.168.1.254
+
+# Full network range
+ipcalc expand 192.168.1.0-192.168.1.255
+
+# Range across subnet boundaries
+ipcalc expand 192.168.1.128-192.168.2.127
+```
+
+**Options:**
+- `--min-prefix, -n` - Minimum prefix length (default: 8)
+- `--max-prefix, -m` - Maximum prefix length (default: 32)
+
+---
+
+### private - Private IP Checker
+
+Check if an IP address is private or public according to RFC standards.
+
+```bash
+ipcalc private 10.0.0.1      # Private (RFC1918)
+ipcalc private 172.16.0.1   # Private (RFC1918)
+ipcalc private 192.168.1.1  # Private (RFC1918)
+ipcalc private 8.8.8.8      # Public IP
+ipcalc private 127.0.0.1    # Loopback
 ```
 
 **Output Example:**
@@ -311,22 +290,43 @@ Reference:   RFC1918
 Status:      Private
 ```
 
-**Special Address Types:**
+**Special Address Types Detected:**
 - **Private (RFC1918)**: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
 - **Loopback (RFC1122)**: 127.0.0.0/8
 - **Link-Local (RFC3927)**: 169.254.0.0/16
 - **Multicast (RFC5771)**: 224.0.0.0/4
-- **Documentation (RFC5737)**: 192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24
 - **CGNAT (RFC6598)**: 100.64.0.0/10
 
 ---
 
-### convert
+### classify - IP Class
+
+Classify IP addresses into traditional A/B/C/D/E classes.
+
+```bash
+ipcalc classify 10.0.0.1
+ipcalc classify 172.16.0.1
+ipcalc classify 192.168.1.1
+ipcalc classify 224.0.0.1  # Multicast
+```
+
+**IP Classes:**
+| Class | Range | Default Mask | CIDR |
+|-------|-------|--------------|------|
+| Class A | 0.0.0.0 - 127.255.255.255 | 255.0.0.0 | /8 |
+| Class B | 128.0.0.0 - 191.255.255.255 | 255.255.0.0 | /16 |
+| Class C | 192.0.0.0 - 223.255.255.255 | 255.255.255.0 | /24 |
+| Class D | 224.0.0.0 - 239.255.255.255 | N/A | Multicast |
+| Class E | 240.0.0.0 - 255.255.255.255 | N/A | Reserved |
+
+---
+
+### convert - IP Format Converter
 
 Convert IP addresses between different formats.
 
 ```bash
-# Convert to integer (default)
+# Convert to integer
 ipcalc convert 192.168.1.1
 
 # Convert to binary
@@ -335,65 +335,88 @@ ipcalc convert 192.168.1.1 --to-format binary
 # Convert to hexadecimal
 ipcalc convert 192.168.1.1 --to-format hex
 
-# Convert to dotted notation
+# Convert integer to dotted notation
 ipcalc convert 3232235777 --to-format dotted
-
-# Convert from binary
-ipcalc convert 11000000.10101000.00000001.00000001 --to-format dotted
 ```
 
-**Output Formats:**
-- `dotted` - Dotted decimal notation (192.168.1.1)
-- `integer` - Integer representation (3232235777)
-- `binary` - Binary representation (11000000.10101000.00000001.00000001)
-- `hex` - Hexadecimal representation (0xC0A80101)
+**Supported Formats:**
+- `dotted` - Dotted decimal (192.168.1.1)
+- `integer` - Integer (3232235777)
+- `binary` - Binary (11000000.10101000.00000001.00000001)
+- `hex` - Hexadecimal (0xC0A80101)
 
 ---
 
-### lookup
+### lookup - Network Lookup
 
-Lookup information about well-known network ranges.
+Lookup information about well-known network ranges and RFC designations.
 
 ```bash
 # List all available networks
 ipcalc lookup --list
 
-# Lookup specific network
-ipcalc lookup RFC1918
-ipcalc lookup LOOPBACK
-ipcalc lookup MULTICAST
-ipcalc lookup DOCUMENTATION
+# Lookup specific RFC networks
+ipcalc lookup RFC1918   # Private addresses
+ipcalc lookup LOOPBACK  # 127.0.0.0/8
+ipcalc lookup MULTICAST # 224.0.0.0/4
+ipcalc lookup CGNAT     # 100.64.0.0/10
 ```
 
 **Available Networks:**
-- **RFC1918** - Private Addresses (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
-- **LOOPBACK** - Loopback (127.0.0.0/8)
-- **LINKLOCAL** - Link-Local (169.254.0.0/16)
-- **MULTICAST** - Multicast (224.0.0.0/4)
-- **TEST-NET-1/2/3** - Documentation ranges
-- **DOCUMENTATION** - All documentation ranges
-- **CGNAT** - Carrier-Grade NAT (100.64.0.0/10)
-- **6TO4** - 6to4 Relay (192.88.99.0/24)
-- **BENCHMARK** - Benchmark Testing (198.18.0.0/15)
+- RFC1918 - Private Addresses (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
+- LOOPBACK - Loopback (127.0.0.0/8)
+- LINKLOCAL - Link-Local (169.254.0.0/16)
+- MULTICAST - Multicast (224.0.0.0/4)
+- TEST-NET-1/2/3 - Documentation ranges
+- CGNAT - Carrier-Grade NAT (100.64.0.0/10)
+- BENCHMARK - Benchmark Testing (198.18.0.0/15)
 
 ---
 
-### visualize
+### conflict - Conflict Detection
 
-Visualize network hierarchy as an ASCII tree diagram.
+Detect IP address conflicts (overlaps) between multiple networks.
 
 ```bash
-# Basic visualization
+# Check for network conflicts
+ipcalc conflict 192.168.1.0/24 192.168.1.128/25
+
+# Verify no overlaps in network design
+ipcalc conflict 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
+```
+
+**Output (No Conflicts):**
+```
+✓ No conflicts detected!
+```
+
+**Output (Conflicts Found):**
+```
+✗ Found 1 conflict!
+
+Conflict #1: A contains B
+Networks: 192.168.1.0/24, 192.168.1.128/25
+Overlap: 192.168.1.128 - 192.168.1.255
+```
+
+---
+
+### visualize - Network Tree View
+
+Visualize network hierarchy as ASCII tree diagram.
+
+```bash
+# Basic network visualization
 ipcalc visualize 192.168.1.0/24
 
-# With depth limit
+# Visualize with depth limit
 ipcalc visualize 10.0.0.0/8 --depth 2
 
-# Larger network
+# Larger network tree
 ipcalc visualize 172.16.0.0/12 --depth 3
 ```
 
-**Output Example:**
+**Example Output:**
 ```
 Network: 192.168.1.0/24
 │
@@ -404,80 +427,26 @@ Network: 192.168.1.0/24
 │   └── Network: 192.168.1.64/26 (64 hosts)
 └── Network: 192.168.1.128/25 (128 hosts)
     └── Network: 192.168.1.128/26 (64 hosts)
-
-Statistics:
-  Total Networks: 5
-  Total IPs: 256
-  Usable Hosts: 254
-```
-
-**Options:**
-- `--depth, -d` - Maximum tree depth
-
----
-
-### conflict
-
-Detect IP address conflicts (overlaps) between multiple networks.
-
-```bash
-# Check for conflicts
-ipcalc conflict 192.168.1.0/24 192.168.1.128/25
-
-# Multiple networks
-ipcalc conflict 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
-
-# Complex scenario
-ipcalc conflict 192.168.1.0/24 192.168.1.0/25 192.168.1.128/26
-```
-
-**Output Example (No Conflicts):**
-```
-Checking 3 networks for conflicts...
-
-✓ No conflicts detected!
-
-Networks:
-  192.168.1.0/24  (192.168.1.0 - 192.168.1.255) [256 IPs]
-  192.168.2.0/24  (192.168.2.0 - 192.168.2.255) [256 IPs]
-  192.168.3.0/24  (192.168.3.0 - 192.168.3.255) [256 IPs]
-```
-
-**Output Example (Conflicts Found):**
-```
-Checking 2 networks for conflicts...
-
-✗ Found 1 conflict!
-
-Conflicts:
-
-  Conflict #1: A contains B
-  Networks: 192.168.1.0/24, 192.168.1.128/25
-  Overlap: 192.168.1.128 - 192.168.1.255
-
-All Networks:
-  192.168.1.0/24  (192.168.1.0 - 192.168.1.255) [256 IPs]
-  192.168.1.128/25  (192.168.1.128 - 192.168.1.255) [128 IPs]
 ```
 
 ---
 
-### plan
+### plan - Subnet Planning
 
 Intelligent subnet planning with recommendations and feasibility ratings.
 
 ```bash
-# Basic planning
+# Basic network planning
 ipcalc plan 192.168.1.0/24
 
-# With expected host count
+# Plan with specific requirements
 ipcalc plan 192.168.1.0/24 100 50 25
 
-# Larger network
+# Large network subnet design
 ipcalc plan 10.0.0.0/8 10000 5000 2000
 ```
 
-**Output Example:**
+**Example Output:**
 ```
 Network: 192.168.1.0/24
 Available: 254 hosts
@@ -491,37 +460,29 @@ Subnetting Suggestions:
 2. Division: 2 subnets of 126 hosts each
    Networks: 192.168.1.0/25, 192.168.1.128/25
    Feasibility: ✓ Recommended
-
-3. Division: 8 subnets of 30 hosts each
-   Networks: 192.168.1.0/27, 192.168.1.32/27, ...
-   Feasibility: ⚠ Consider if smaller subnets needed
 ```
-
-**Options:**
-- `CIDR` - Network to plan (CIDR notation)
-- `HOST_COUNT...` - Expected number of hosts per subnet
 
 ---
 
-### dhcp
+### dhcp - DHCP Planning
 
 DHCP scope planning with static reservations and exclusion ranges.
 
 ```bash
-# Basic DHCP planning
+# Basic DHCP scope planning
 ipcalc dhcp 192.168.1.0/24
 
-# With reservations
+# Plan with reservations
 ipcalc dhcp 192.168.1.0/24 --reservations 10
 
-# With exclusions
+# Plan with exclusions
 ipcalc dhcp 192.168.1.0/24 --exclusions 5
 
-# Full planning
+# Complete DHCP planning
 ipcalc dhcp 192.168.1.0/24 --reservations 10 --exclusions 5
 ```
 
-**Output Example:**
+**Example Output:**
 ```
 DHCP Scope Planning for 192.168.1.0/24
 ============================================================
@@ -534,22 +495,15 @@ DHCP Scope:
 
 ------------------------------------------------------------
 Recommended Static Reservations:
-(First 3 addresses reserved for infrastructure)
-
   1: 192.168.1.1 (Gateway/Router)
-          MAC: 00:11:22:33:44:01
   2: 192.168.1.2 (Primary DNS)
-          MAC: 00:11:22:33:44:02
   3: 192.168.1.3 (Secondary DNS)
-          MAC: 00:11:22:33:44:03
 
 ------------------------------------------------------------
 Recommended Exclusions:
-(Addresses excluded from DHCP pool for static assignment)
-
-  1. 192.168.1.1 - 192.168.1.10 [Infrastructure (gateway, DNS, servers)]
-  2. 192.168.1.11 - 192.168.1.30 [Static workstations/printers]
-  3. 192.168.1.200 - 192.168.1.220 [Reserved for future infrastructure]
+  1. 192.168.1.1 - 192.168.1.10 [Infrastructure]
+  2. 192.168.1.11 - 192.168.1.30 [Static assignment]
+  3. 192.168.1.200 - 192.168.1.220 [Reserved]
 
 ------------------------------------------------------------
 DHCP Pool Summary:
@@ -557,71 +511,51 @@ DHCP Pool Summary:
   Static reservations:  3
   Excluded addresses:   40
   Available for DHCP:   211
-
-============================================================
-Example isc-dhcp-server Configuration:
-  subnet 192.168.1.0 netmask 255.255.255.0 {
-    range 192.168.1.31 192.168.1.199;
-    option routers 192.168.1.1;
-    # Add exclusions and reservations above
-  }
 ```
-
-**Options:**
-- `--reservations, -r` - Number of static reservations to plan
-- `--exclusions, -e` - Number of exclusion ranges
 
 ---
 
-## Output Formats
+### validate - IP Validator
 
-All commands support multiple output formats using the `--format` or `-f` option. **The format option must come before the subcommand.**
+Validate IP addresses or CIDR notation.
 
 ```bash
-# Human-readable (default)
-ipcalc subnet 192.168.1.0/24
+# Validate single IP
+ipcalc validate 192.168.1.1
 
-# JSON output
-ipcalc --format json subnet 192.168.1.0/24
-ipcalc -f json subnet 192.168.1.0/24
+# Validate CIDR notation
+ipcalc validate 192.168.1.0/24
 
-# YAML output
-ipcalc --format yaml subnet 192.168.1.0/24
+# Validate multiple addresses
+ipcalc validate 10.0.0.0/8 172.16.0.1 192.168.1.0/16
 
-# CSV output
-ipcalc --format csv subnet 192.168.1.0/24
+# Strict mode - fails on any invalid input
+ipcalc validate --strict 192.168.1.0/24 invalid_ip
 ```
-
-**Format Options:**
-- `human` - Human-readable output (default)
-- `json` - JSON formatted output
-- `yaml` - YAML formatted output
-- `csv` - CSV formatted output
 
 ---
 
-## Batch Processing
+### range - IP Range Calculator
 
-Process multiple IPs or networks from a file.
+Show the IP range (start and end addresses) for CIDR notation.
 
 ```bash
-# Create input file
-cat > ips.txt << EOF
-192.168.1.0/24
-10.0.0.0/8
-172.16.0.0/12
-EOF
+ipcalc range 192.168.1.0/24
+ipcalc range 10.0.0.0/8
+```
 
-# Process from file
-ipcalc subnet --file ips.txt
-
-# With format (note: format option comes before subcommand)
-ipcalc --format json subnet --file ips.txt
+**Example Output:**
+```
+CIDR:         192.168.1.0/24
+Start:        192.168.1.0 (Network)
+First Host:   192.168.1.1
+Last Host:    192.168.1.254
+End:          192.168.1.255 (Broadcast)
 ```
 
 ---
 
-## Common Use Cases
+## 💡 Common Use Cases
 
 ### Network Administration
 
@@ -642,108 +576,123 @@ ipcalc subnet 10.0.0.0/8 --show-all
 # Plan for new department (need 100 hosts)
 ipcalc plan 192.168.0.0/16 100
 
-# Divide network
+# Divide network into subnets
 ipcalc divide 192.168.1.0/24 8
 
-# VLSM allocation
+# VLSM allocation for enterprise network
 ipcalc vlsm 10.0.0.0/8 10000,5000,2000,1000,500
 ```
 
 ### IP Range Conversion
 
 ```bash
-# Convert IP range to CIDR
+# Convert IP range to CIDR blocks
 ipcalc expand 192.168.1.1-192.168.1.254
 
-# Convert range across boundaries
+# Convert range across subnet boundaries
 ipcalc expand 192.168.0.0-192.168.3.255
+
+# Aggregate CIDR for route summarization
+ipcalc summarize 192.168.0.0/24 192.168.1.0/24 192.168.2.0/24 192.168.3.0/24
 ```
 
 ### Security & Compliance
 
 ```bash
-# Check private IPs
+# Check for private vs public IP
 ipcalc private 10.0.0.1 172.16.0.1 192.168.1.1 8.8.8.8
 
-# Lookup network types
+# Lookup special network ranges
 ipcalc lookup RFC1918
 
-# Detect conflicts
+# Detect IP conflicts
 ipcalc conflict 192.168.1.0/24 192.168.1.128/25
 ```
 
 ### DHCP Planning
 
 ```bash
-# Plan DHCP scope
+# Plan DHCP scope for office network
 ipcalc dhcp 192.168.1.0/24 --reservations 10 --exclusions 5
 
-# Plan for large network
+# Plan for large enterprise network
 ipcalc dhcp 10.0.0.0/8 --reservations 50 --exclusions 20
 ```
 
 ---
 
-## Global Options
+## 📊 Output Formats
 
-- `--format, -f` - Output format (human, json, yaml, csv)
-- `--strict` - Strict mode: fail on any invalid input
-- `--file, -i` - Input file for batch processing
-- `--verbose, -v` - Show verbose output
-- `--help, -h` - Show help information
-- `--version, -V` - Show version information
+All commands support multiple output formats: human-readable (default), JSON, YAML, and CSV.
+
+```bash
+# Human-readable output (default)
+ipcalc subnet 192.168.1.0/24
+
+# JSON output for scripting
+ipcalc --format json subnet 192.168.1.0/24
+
+# YAML output
+ipcalc --format yaml subnet 192.168.1.0/24
+
+# CSV output for data processing
+ipcalc --format csv subnet 192.168.1.0/24
+```
+
+**Note:** The format option must come before the subcommand.
 
 ---
 
-## Architecture
+## 🔧 Batch Processing
+
+Process multiple IP addresses or networks from a file.
+
+```bash
+# Create input file with IP addresses/CIDRs
+cat > ips.txt << EOF
+192.168.1.0/24
+10.0.0.0/8
+172.16.0.0/12
+EOF
+
+# Process from file
+ipcalc subnet --file ips.txt
+
+# Batch processing with JSON output
+ipcalc --format json subnet --file ips.txt
+```
+
+---
+
+## 🏗️ Architecture
 
 ```
 ipcalc/
 ├── src/
 │   ├── main.rs           # CLI entry point
 │   ├── lib.rs            # Library exports
-│   ├── cli/              # CLI commands
-│   │   ├── mod.rs
-│   │   ├── validate.rs
-│   │   ├── subnet.rs
-│   │   ├── range.rs
-│   │   ├── expand.rs
-│   │   ├── summarize.rs
-│   │   ├── divide.rs
-│   │   ├── vlsm.rs
-│   │   ├── classify.rs
-│   │   ├── private.rs
-│   │   ├── convert.rs
-│   │   ├── lookup.rs
-│   │   ├── visualize.rs
-│   │   ├── conflict.rs
-│   │   ├── plan.rs
-│   │   └── dhcp.rs
-│   ├── core/             # Core IP calculations
-│   │   ├── mod.rs
+│   ├── cli/              # CLI commands (15+ subcommands)
+│   │   ├── validate.rs   # IP/CIDR validation
+│   │   ├── subnet.rs     # Subnet calculation
+│   │   ├── range.rs      # IP range calculation
+│   │   ├── expand.rs     # IP range to CIDR
+│   │   ├── summarize.rs  # CIDR aggregation
+│   │   ├── divide.rs     # Network division
+│   │   ├── vlsm.rs       # VLSM calculator
+│   │   ├── classify.rs   # IP classification
+│   │   ├── private.rs    # Private IP detection
+│   │   ├── convert.rs    # Format conversion
+│   │   ├── lookup.rs     # Network lookup
+│   │   ├── visualize.rs  # Network visualization
+│   │   ├── conflict.rs   # Conflict detection
+│   │   ├── plan.rs       # Subnet planning
+│   │   └── dhcp.rs       # DHCP planning
+│   ├── core/             # Core IP calculation logic
 │   │   ├── ipv4/         # IPv4 implementation
-│   │   │   ├── address.rs
-│   │   │   ├── network.rs
-│   │   │   ├── classify.rs
-│   │   │   └── private.rs
 │   │   ├── ipv6/         # IPv6 implementation
-│   │   │   ├── address.rs
-│   │   │   └── network.rs
-│   │   ├── cidr/         # CIDR operations
-│   │   │   ├── aggregate.rs
-│   │   │   └── collapse.rs
-│   │   └── vlsm/         # VLSM calculations
-│   ├── formats/          # Output formatters
-│   │   ├── mod.rs
-│   │   ├── json.rs
-│   │   ├── yaml.rs
-│   │   ├── csv.rs
-│   │   └── human.rs
-│   └── utils/            # Utility functions
-│       ├── mod.rs
-│       ├── validation.rs
-│       ├── parsing.rs
-│       └── constants.rs
+│   │   └── cidr/         # CIDR operations
+│   ├── formats/          # Output formatters (JSON/YAML/CSV)
+│   └── utils/            # Utilities
 ├── tests/                # Integration tests
 ├── Cargo.toml
 └── README.md
@@ -751,7 +700,7 @@ ipcalc/
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -763,21 +712,58 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Acknowledgments
+## ❓ FAQ
 
-- Inspired by the classic `ipcalc` tool
-- Built with Rust for performance and safety
-- Thanks to all contributors
+**Q: What is ipcalc used for?**
+
+A: ipcalc is an IP address calculator and subnet mask calculator used for network planning, subnetting, and IP address management. It helps network administrators calculate subnets, plan VLSM allocations, and manage IP address spaces.
+
+**Q: How do I calculate a subnet?**
+
+A: Use the `subnet` command:
+```bash
+ipcalc subnet 192.168.1.0/24
+```
+
+**Q: What is the difference between ipcalc and an online IP calculator?**
+
+A: ipcalc is a command-line tool that works offline, supports scripting, multiple output formats (JSON/YAML/CSV), and is designed for automation and integration into network management workflows.
+
+**Q: Does ipcalc support IPv6?**
+
+A: Yes, ipcalc supports both IPv4 and IPv6 address calculations.
+
+**Q: What is VLSM?**
+
+A: VLSM (Variable Length Subnet Masking) allows different subnets within the same network to have different subnet masks, enabling more efficient IP address allocation. Use `ipcalc vlsm` to calculate VLSM subnets.
+
+**Q: How do I convert an IP range to CIDR?**
+
+A: Use the `expand` command:
+```bash
+ipcalc expand 192.168.1.1-192.168.1.254
+```
+
+**Q: Can I use ipcalc for DHCP planning?**
+
+A: Yes, the `dhcp` command helps plan DHCP scopes with appropriate exclusion ranges and static reservations:
+```bash
+ipcalc dhcp 192.168.1.0/24 --reservations 10 --exclusions 5
+```
+
+**Q: Is ipcalc free to use?**
+
+A: Yes, ipcalc is open-source software released under the MIT License.
 
 ---
 
-## Support
+## 📞 Support
 
 If you encounter any issues or have questions:
 
@@ -786,4 +772,4 @@ If you encounter any issues or have questions:
 
 ---
 
-**Made with ❤️ and Rust**
+**Made with ❤️ and [Rust](https://www.rust-lang.org)** | **Star ⭐ if you find it useful!**
