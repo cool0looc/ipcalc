@@ -3,9 +3,10 @@
 > A powerful, feature-rich IP address calculator and subnet mask calculator written in Rust. Calculate subnets, CIDR notation, VLSM, DHCP scopes, and more for IPv4 and IPv6 networks.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Rust](https://img.shields.io/badge/Rust-1.70+-orange.svg)](https://www.rust-lang.org)
+[![Rust](https://img.shields.io/badge/Rust-1.95+-orange.svg)](https://www.rust-lang.org)
 [![Stars](https://img.shields.io/github/stars/cool0looc/ipcalc?style=social)](https://github.com/cool0looc/ipcalc)
 [![Downloads](https://img.shields.io/github/downloads/cool0looc/ipcalc/total.svg)](https://github.com/cool0looc/ipcalc/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/cool0looc/ipcalc/release.yml)](https://github.com/cool0looc/ipcalc/actions)
 
 <!-- TOC -->
 - [ipcalc - IP Address Calculator & Subnet Tools](#ipcalc---ip-address-calculator--subnet-tools)

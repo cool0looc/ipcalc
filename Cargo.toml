@@ -8,9 +8,9 @@ license = "MIT"
 repository = "https://github.com/cool0looc/ipcalc"
 homepage = "https://github.com/cool0looc/ipcalc"
 documentation = "https://github.com/cool0looc/ipcalc#readme"
-keywords = ["ip", "ipv4", "ipv6", "subnet", "cidr", "calculator", "network"]
+keywords = ["ip", "ipv4", "ipv6", "subnet", "cidr", "calculator", "network", "vlsm", "dhcp"]
 categories = ["command-line-utilities", "network-programming"]
-rust-version = "1.70"
+rust-version = "1.95"
 
 [dependencies]
 # CLI

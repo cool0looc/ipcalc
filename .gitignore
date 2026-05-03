@@ -1,13 +1,11 @@
-# Rust
+# Rust build artifacts
 /target/
 **/*.rs.bk
 Cargo.lock
-*.pdb
-docs
 
 # IDE
-.vscode/
 .idea/
+.vscode/
 *.swp
 *.swo
 *~
@@ -16,13 +14,17 @@ docs
 .DS_Store
 Thumbs.db
 
+# Binary releases (build locally or via CI)
+releases/
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+
 # Logs
 *.log
 
-# Binaries
-ipcalc
-*.exe
-
-# Release archives
-*.tar.gz
-SHA256SUMS
+# Environment files
+.env
+.env.local

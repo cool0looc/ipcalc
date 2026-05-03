@@ -3,91 +3,141 @@ name: Release
 on:
   push:
     tags:
-    - 'v*.*.*'
-
-env:
-  CARGO_TERM_COLOR: always
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v0.1.0)'
+        required: true
+        type: string
 
 jobs:
-  release:
+  create-release:
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          name: "Release ${{ github.event.inputs.version || github.ref_name }}"
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Install Rust
-      uses: dtolnay/rust-action@stable
-      with:
-        toolchain: stable
+  build:
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            artifact_name: ipcalc-linux-x86_64
+            rust_target: x86_64-unknown-linux-gnu
+          - os: ubuntu-24.04
+            target: aarch64-unknown-linux-gnu
+            artifact_name: ipcalc-linux-aarch64
+            rust_target: aarch64-unknown-linux-gnu
+          - os: macos-14
+            target: aarch64-apple-darwin
+            artifact_name: ipcalc-macos-aarch64
+            rust_target: aarch64-apple-darwin
+          - os: macos-13
+            target: x86_64-apple-darwin
+            artifact_name: ipcalc-macos-x86_64
+            rust_target: x86_64-apple-darwin
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+            artifact_name: ipcalc-windows.exe
+            rust_target: x86_64-pc-windows-msvc
 
-    - name: Cache cargo registry
-      uses: actions/cache@v3
-      with:
-        path: ~/.cargo/registry
-        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Cache cargo index
-      uses: actions/cache@v3
-      with:
-        path: ~/.cargo/git
-        key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.95
+          targets: ${{ matrix.rust_target }}
 
-    - name: Cache target directory
-      uses: actions/cache@v3
-      with:
-        path: target
-        key: ${{ runner.os }}-cargo-target-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build release binary
+        run: |
+          cargo build --release --target ${{ matrix.target }}
+          cd target/${{ matrix.target }}/release
+          if [ "${{ matrix.target }}" = "x86_64-pc-windows-msvc" ]; then
+            mv ipcalc.exe ${{ matrix.artifact_name }}
+          else
+            mv ipcalc ${{ matrix.artifact_name }}
+          fi
+          chmod +x ${{ matrix.artifact_name }}
 
-    - name: Build release
-      run: cargo build --release
-      working-directory: .
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          files: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Run tests
-      run: cargo test --release
-      working-directory: .
+  build-no-stdlib:
+    needs: create-release
+    runs-on: ubuntu-24.04
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Package
-      shell: bash
-      run: |
-        # Create distribution package
-        mkdir -p release
-        cp target/release/ipcalc release/
-        tar czf ipcalc-${GITHUB_REF#refs/tags/v}-linux-x86_64.tar.gz -C release ipcalc
-        sha256sum ipcalc-${GITHUB_REF#refs/tags/v}-linux-x86_64.tar.gz > SHA256SUMS
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.95
+          targets: x86_64-unknown-linux-musl
 
-    - name: Generate Changelog
-      id: changelog
-      uses: mikepenz/release-changelog-builder-action@v3
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build static binary
+        run: |
+          cargo build --release --target x86_64-unknown-linux-musl
+          cd target/x86_64-unknown-linux-musl/release
+          mv ipcalc ipcalc-linux-x86_64-musl
+          chmod +x ipcalc-linux-x86_64-musl
 
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          ipcalc-*-linux-x86_64.tar.gz
-          SHA256SUMS
-        body: ${{ steps.changelog.outputs.changelog }}
-        draft: false
-        prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          files: target/x86_64-unknown-linux-musl/release/ipcalc-linux-x86_64-musl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  crates-io:
+  checksum:
+    needs: create-release
     runs-on: ubuntu-latest
-    needs: release
+    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Install Rust
-      uses: dtolnay/rust-action@stable
-      with:
-        toolchain: stable
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
 
-    - name: Publish to crates.io
-      env:
-        CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      run: |
-        cargo publish --token ${CARGO_REGISTRY_TOKEN}
-      working-directory: .
+      - name: Generate checksums
+        run: |
+          cd artifacts
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Upload checksums
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          files: artifacts/SHA256SUMS.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
