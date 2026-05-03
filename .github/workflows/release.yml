@@ -13,11 +13,13 @@ on:
 
 jobs:
   create-tag:
-    if: github.event.inputs.version != ''
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.create_tag.outputs.tag }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Create tag
         id: create_tag
         run: |
@@ -27,12 +29,13 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git tag -a "$TAG" -m "Release $TAG"
             git push origin "$TAG"
+          else
+            echo "Tag already exists"
           fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
   build:
     needs: create-tag
-    if: github.event.inputs.version != '' || startsWith(github.ref, 'refs/tags/')
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -84,12 +87,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+          tag_name: ${{ needs.create-tag.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-static:
     needs: create-tag
-    if: github.event.inputs.version != '' || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     
     steps:
@@ -113,6 +116,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: target/x86_64-unknown-linux-musl/release/ipcalc-linux-x86_64-musl
+          tag_name: ${{ needs.create-tag.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -139,5 +143,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/SHA256SUMS.txt
+          tag_name: ${{ needs.create-tag.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
